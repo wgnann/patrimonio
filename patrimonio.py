@@ -4,8 +4,9 @@ from decouple import config
 
 parser = argparse.ArgumentParser()
 mxg = parser.add_mutually_exclusive_group(required=True)
-mxg.add_argument("-p", "--patrimonio", metavar='patrimonio', help="patrimonio do bem patrimoniado")
-mxg.add_argument("-s", "--serial", metavar='serial', help="serial do bem patrimoniado")
+mxg.add_argument("-p", "--patrimonio", help="patrimonio do bem")
+mxg.add_argument("-s", "--serial", help="serial do bem patrimoniado")
+mxg.add_argument("-a", "--ativo", metavar='PATRIMONIO', help="patrimonio do bem")
 args = parser.parse_args()
 
 conn = pymssql.connect(
@@ -22,8 +23,15 @@ if (args.serial):
     cursor.execute(query, args.serial)
 elif (args.patrimonio):
     query = 'SELECT numidfpat as cod FROM BEMPATRIMONIADO where numpat = %s'
-    numpat = int(args.patrimonio.replace('.',''))
+    patrimonio = args.patrimonio
+    numpat = int(patrimonio.replace('.',''))
     cursor.execute(query, numpat)
+elif (args.ativo):
+    query = 'SELECT stabem as cod FROM BEMPATRIMONIADO where numpat = %s'
+    patrimonio = args.ativo
+    numpat = int(patrimonio.replace('.',''))
+    cursor.execute(query, numpat)
+
 for row in cursor:
     print("%s"%(row['cod']))
 
